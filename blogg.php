@@ -11,7 +11,7 @@
         <head>
            <title>www.LifeOnBlog.com</title>
               <link href="https://fonts.googleapis.com/css?family=Lobster|Montserrat+Subrayada" rel="stylesheet">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <meta name="viewport" content="width=device-width, initial-scale=1">
               <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
               <link href="https://fonts.googleapis.com/css?family=Sedgwick+Ave" rel="stylesheet">
               <link href="https://fonts.googleapis.com/css?family=Cabin+Sketch" rel="stylesheet">
@@ -30,17 +30,18 @@
          #newO{width:155px;margin:1%;}
          #newU{width:155px;margin:1%;}
          #drop{margin:1%;}
+         #drop{margin-left:0%;margin-top:-0.5%;}
      </style>
   <div class='block' style='border-bottom:1px solid black;'>
     <div class='heade'><h1 class='header'>lIFEOnBLOG</h1></div>
-  <div id='drop' class="dropdown">
-    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+  <div class='drop-container'><div id='drop' class="dropdown">
+    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">   
     <span class="glyphicon glyphicon-cog"></span></button>
-    <ul class="dropdown-menu">
-        <?php require 'displayer.php';?>
+    <ul id='showSetting' class="dropdown-menu dropdown-menu-right">
+        <?php ///require 'displayer.php';?>
     </ul>
      </div>
-  </div>        
+  </div><div class='ffl'></div>        
 </div>
     <!-- post data from the pop up.... -->
       <div id='popup_container'>
@@ -53,13 +54,13 @@
               <div class='text-containers'>
                 <textarea name='txt' class='txt'></textarea>
               </div>
-          <button name='insert' id='helper' class='btn btn-success'>POST</button>
+  <button onclick='load()' name='insert' id='helper' class='btn btn-success'>POST</button>
              </form>
            </div>
          </div>
       <?php
+  //require 'connection.php';
   $connect = new mysqli('localhost','root','','blogg');
-  if(!$connect){echo 'connection Fail.'; header('location:google.com');}
   if(isset($_POST['insert'])){
   $head =$connect->real_escape_string($_POST['td']);           
   $txt =$connect->real_escape_string($_POST['txt']);
@@ -76,11 +77,11 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
            $request = mysqli_query($connect,$inserted);
                 }
                   }else{
-            $ins = "INSERT INTO pst(ID,header,image,textd,user)VALUES('NULL','$head','NULL','$txt','NULL')";
+            $ins = "INSERT INTO pst(ID,header,image,textd,user)VALUES('NULL','$head','NULL','$txt','$member')";
                 $request2 = mysqli_query($connect,$ins);
                     }
                        }else{
-            $ins = "INSERT INTO pst(ID,header,image,textd,user)VALUES('NULL','$head','NULL','$txt','NULL')";
+            $ins = "INSERT INTO pst(ID,header,image,textd,user)VALUES('NULL','$head','NULL','$txt','$member')";
                 $request2 = mysqli_query($connect,$ins);
                        }
                      }
@@ -129,52 +130,39 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
                 });
              });
               </script>
-        <div class='container-block'>
+        <div id='blcontent' class='container-block'>
    <!-- blogg content -->
-     <?php
-     //delete bottoms ...
-          $connect = new mysqli('localhost','root','','blogg');
-          $find = "SELECT * FROM pst";
-          $gold = mysqli_query($connect,$find); 
-         while($rows = mysqli_fetch_assoc($gold)){
-          $ID = $rows['ID'];
-         	$header = $rows['header'];
-         	$image = $rows['image'];
-         	$text = $rows['textd'];
-          $us = $rows['user'];
-          if(isset($header)){
-            if(isset($_SESSION['user'])){
-             if($_SESSION['user'] == $us){
-               echo "<div id='dor' class='dropdown'>
-    <button id ='settingsk' class='btn btn-primary dropdown-toggle' type='button' data-toggle='dropdown'>
-    <span class='caret'></span></button>
-    <ul class='dropdown-menu'>
-      <li><a href='#''><button id='upOn'class='btn btn-info' value='".$ID."'>Update</button></a></li>
-      <li><a href='#'><button id='delOn' class='btn btn-danger' value='".$ID."'>Delete</button></a></li></ul></div></div>";
-
-    echo "<div class='header-block'><h1 class='psh'>".$header."</h1></div>";
-        }
-           }else{
-           echo "<div class='header-block'><h1 class='psh'>".$header."</h1></div>";}
-           }
-          if(isset($image)){
-  if(substr($image,-3) == "jpg" ||substr($image,-3)=="png"){
-        echo"<div class='image-container'><img class='psimage' src='image/".$image."'/></div>";}}
-          if(isset($text)){echo "<div class='text-container'><p class='pspr'>".$text."</p></div>";}
-           if(isset($us)){
-          echo '<div class="usa"><p>By:</p><h2 class="uname">'.$us.'</h2></div>';
-          }
-        }
-      ?>
-      </div>
-       <style>
-          #drop{margin-left:0%;margin-top:-0.5%;}
-        #dor{}
-       </style>   
+      </div> 
         <script>
         var pop = document.getElementById('popup_container');
           function closeb(){pop.style.display ='none';}
           function openb(){ pop.style.display ='block';}
+                var showing = document.getElementById('blcontent');
+
+                   function load(){
+                      var finder = new XMLHttpRequest();
+                        finder.open('GET','bloggContent.php',true);
+                        finder.onreadystatechange = function(){
+                             if(this.readyState == 4 && this.status ==200){
+                                  showing.innerHTML = this.responseText;
+                             }
+                        }
+                        finder.send();
+                       reload();
+                   }
+                load();
+           
+                  function reload(){
+                    var finders = new XMLHttpRequest();
+                        finders.open('GET','displayer.php',true);
+                        finders.onreadystatechange = function(){
+                             if(this.readyState == 4 && this.status ==200){
+                       var showings = document.getElementById('showSetting');
+                                 showings.innerHTML = this.responseText;
+                             }
+                        }
+                        finders.send();
+                  }
        </script>  
      <style>
             .loginCreator{ font-family:'Cabin Sketch', cursive; font-size:35px; padding:0px;width:140px;background-color:white;padding-top:5px;padding-bottom:5px;border:1px solid black;border-radius:5px;}
@@ -214,7 +202,10 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
       <div class='config'>
        <div id='ccc' class='ourclose'><p class='endzone'>X</p></div>
         <?php
-        $val = $_SESSION['loopup'];
+         if(isset($_SESSION['loopup'])){
+           $val = $_SESSION['loopup'];
+         }
+       
       $connect = new mysqli('localhost','root','','blogg');
       if(isset($_SESSION['user'])){
      if(isset($_POST['senders'])){
@@ -240,25 +231,34 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
                 <div class='form-group'>
               <textarea name='newtext' class='form-control' id='textUpdate' value=''></textarea>
               </div>
-                <button name='senders' id='senders' class='btn btn-info'>Update</button>
+                <button onclick='load()' name='senders' id='senders' class='btn btn-info'>Update</button>
               </form>
           </div>
        </div>
         <style>
              .second_pop{ position:fixed; top:0px;background-color:rgba(0,0,0,0.7);}
           .second_pops{height:100%; width:100%;position:fixed; top:0px;background-color:rgba(0,0,0,0.7);}
-          @media(max-width:400px){
-            .log-container{margin-left:25%;}
+          @media(max-width:400px){;}
             .C-containers{margin-left:20%;}
           }
           .form-container_pops{width:50%;}
+            .log-container{margin-left:25%}
         @media(max-width:600px){
            .form-container_pops{width:70%;} 
         }
+    .drop-container{height:auto; width:auto;float:right;flex:0.5;margin-top:6%;}
+        .block{display:flex;}
+        .heade{flex:5;}
+        .ffl{flex:0.1;}
+        #drop{margin:15%;}
+          @media(max-width:600px;){
+            #drop{margin:15%;margin-top:20%;}
+         }
         @media(max-width:400px){
-           .form-container_pops{width:100%} 
+           .form-container_pops{width:100%}
+           #drop{float:right;margin-top:-10%;}
         }
-        </style>
+  </style>
           <div id='creator-displayer' class='second_pop'>
                <div  class='form-container_pop'>
             <!-- Second pop activator .... -->
@@ -278,7 +278,7 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
                    <div class='form-group'>
                    <input class='form-control' name='spassword' type='password' placeholder='Re Enter Password'/>
                    </div>
-            <button name='sss' id='sbtn' class='btn btn-info'>Submit</button>
+            <button onclick='load()' name='sss' id='sbtn' class='btn btn-info'>Submit</button>
         </form>      
     <?php
       $connecting2 = new mysqli('localhost','root','','blogg');
@@ -342,7 +342,7 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
                     <div class='form-group'>
                     <input class='form-control' name='passwordL' type='password' placeholder='Ur password'/>
                     </div>
-                  <button name='ssd' id='sbtns' class='btn btn-info'>Submit</button>
+                  <button onclick='load()' name='ssd' id='sbtns' class='btn btn-info'>Submit</button>
               </form>       
           </div>
    <?php
