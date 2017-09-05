@@ -37,9 +37,7 @@
   <div class='drop-container'><div id='drop' class="dropdown">
     <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">   
     <span class="glyphicon glyphicon-cog"></span></button>
-    <ul id='showSetting' class="dropdown-menu dropdown-menu-right">
-        <?php ///require 'displayer.php';?>
-    </ul>
+    <ul id='showSetting' class="dropdown-menu dropdown-menu-right"></ul>
      </div>
   </div><div class='ffl'></div>        
 </div>
@@ -62,8 +60,8 @@
   //require 'connection.php';
   $connect = new mysqli('localhost','root','','blogg');
   if(isset($_POST['insert'])){
-  $head =$connect->real_escape_string($_POST['td']);           
-  $txt =$connect->real_escape_string($_POST['txt']);
+  $head =$connect->real_escape_string(htmlentities($_POST['td']));           
+  $txt =$connect->real_escape_string(htmlentities($_POST['txt']));
   $img =$_FILES['image']['name'];
   $target = "image/".basename($_FILES['image']['name']);        
   if(strlen($head) > 1 && strlen($txt) > 1){          
@@ -209,17 +207,16 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
       $connect = new mysqli('localhost','root','','blogg');
       if(isset($_SESSION['user'])){
      if(isset($_POST['senders'])){
-   $Nh = $_POST['newheader'];
-   $Nt = $_POST['newtext'];
+   $Nh = $connect->real_escape_string(htmlentities($_POST['newheader']));
+   $Nt = $connect->real_escape_string(htmlentities($_POST['newtext']));
     if(isset($Nh)){
-  $chang = "UPDATE pst SET header = '$Nh' WHERE ID = $val ";
+       $chang = "UPDATE pst SET header = '$Nh' WHERE ID = $val ";
           $connect->query($chang);
-
-         if(isset($Nt)){
+              if(isset($Nt)){
           $cha = "UPDATE pst SET textd ='$Nt' WHERE ID = $val";
         $connect->query($cha); 
-             }     
-            }     
+             }
+            }           
           }
         }
         ?>
@@ -258,6 +255,7 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
            .form-container_pops{width:100%}
            #drop{float:right;margin-top:-10%;}
         }
+         #settingsk{position:relative; top:150px;}
   </style>
           <div id='creator-displayer' class='second_pop'>
                <div  class='form-container_pop'>
@@ -329,6 +327,18 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
 
              .usa{ margin-left:10%; padding-left:5px;height:40px; display:flex; width:200px;margin-top:1%;}   
              .uname{font-size:20px;margin-top:0%;}}
+
+              /* fix change login and Create Account..*/
+
+
+
+
+
+
+
+
+
+
              </style>
            <div id='creator-displayers' class='second_pops'>
                <div  class='form-container_pops'>         
@@ -347,8 +357,8 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
           </div>
    <?php
        if(isset($_POST['ssd'])){
-        $em = $_POST['emailL'];
-        $pa = $connecting2->real_escape_string(md5($_POST['passwordL']));
+        $em = $connect->real_escape_string(htmlentities($_POST['emailL']));
+  $pa = $connecting2->real_escape_string(htmlentities(md5($_POST['passwordL'])));
   if(strlen($em) > 4 && strlen($pa) > 4){
     $finding2 = "SELECT * FROM users WHERE email ='$em'";
     $resulted = mysqli_query($connect,$finding2);
