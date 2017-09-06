@@ -120,6 +120,7 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
                       data:'sel='+ id,
                       success: function(data){
                            console.log("done");
+                          load();
                        }
                     });
                 });
@@ -233,12 +234,9 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
           </div>
        </div>
         <style>
-             .second_pop{ position:fixed; top:0px;background-color:rgba(0,0,0,0.7);}
-          .second_pops{height:100%; width:100%;position:fixed; top:0px;background-color:rgba(0,0,0,0.7);}
-          @media(max-width:400px){;}
+          .second_pop{ position:fixed; top:0px;background-color:rgba(0,0,0,0.7);}
+          .second_pops{ display:none;height:100%; width:100%;position:fixed; top:0px;background-color:rgba(0,0,0,0.7);}
             .C-containers{margin-left:20%;}
-          }
-          .form-container_pops{width:50%;}
             .log-container{margin-left:25%}
         @media(max-width:600px){
            .form-container_pops{width:70%;} 
@@ -315,35 +313,53 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
            <!-- Second pop logIn activator .... -->
             <style>
               #sbtns{width:100%;}
-            .second_pops{position:fixed; margin:0px; padding:0px;height:100%; width:100%;z-index:100; display:none;top:30px;}
-            .form-container_pops{position:fixed; height:auto; top:35px; width:35%;margin-left:30%; background-color:white; z-index:200;border-radius:5px;border:1px solid black;}
-             #eddits{width:65%; margin:13%;margin-left:20%; text-align:center;}
              .Create_user_hs{top:10px; margin-top:1%; margin-bottom:0px; position:relative;top:10px;font-size:45px;padding-top:50px;padding-left:50px;font-family:'Cabin Sketch', cursive;}
-             .close_boxs{height:30px;width:30px;float:right;text-align:center;margin:1%; z-index:400;}
-             .x-boxs{font-size:20px;border-radius:3000px;background-color:#e5326b;color:white;}
+             .close_boxs{height:30px;width:30px;float:right;text-align:center; z-index:400;}
+             .x-boxs{font-size:20px;background-color:#e5326b;color:white;}
              @media(max-width:600px){#eddits{text-align:center;}#newU{margin-top:-10%;}}
 
-             @media(max-width:450px){.Create_user_hs{font-size:30px;padding-left:10px;}.form-container_pops{width:100%;margin-left:0%;}#newU{margin-top:-10%;}}
+             @media(max-width:450px){.Create_user_hs{font-size:30px;padding-left:10px;}.form-container_pops{width:100%;height:90%;margin-left:0%;}#newU{margin-top:-10%;}}
 
              .usa{ margin-left:10%; padding-left:5px;height:40px; display:flex; width:200px;margin-top:1%;}   
              .uname{font-size:20px;margin-top:0%;}}
 
+
+
               /* fix change login and Create Account..*/
+              .second_pops{display:none; position:fixed; margin:0px; padding:0px; height:100%; width:100%; z-index:100;}
+
+          .form-container_pops{position:relative; top:10%; height:85%; width:50%; border:1px solid black; background-color:white; left:25%;border-radius:10px;}
+
+          @media(max-width:600px){
+              .form-container_pops{ position:relative; top:10%; height:85%; width:70%; border:1px solid black; background-color:white; left:10%;border-radius:10px;}
+          }
+
+              #eddits{width:60%;position:relative;left:20%;margin-top:10%;}
+
+               @media(min-width:900px){
+                 #eddits{width:40%;position:relative;left:30%;margin-top:10%;}
+               }
+
+               .close_box{border-radius:0px;}
+               .x-box{border-radius:0px;}
 
 
+               .chois{height:auto; width:150px;border-radius:1000px;position:relative;left:37%; top:20px;}
 
+               /*//// btn in*/
+               .C-containers{height:auto;width:auto;float:right;}
+                .CCreators{width:50px;float:right;}
+          @media(max-width:420px){
+              .form-container_pops{top:10%; height:60%; width:98%; border:1px solid black; background-color:white; left:1%;border-radius:10px;}
 
-
-
-
-
-
-
+                  #eddits{width:65%;left:0px;margin-top:10%;}
+                  .chois{height:auto; width:150px;border-radius:1000px;position:relative;left:37%; top:20px;}
+               }
              </style>
            <div id='creator-displayers' class='second_pops'>
-               <div  class='form-container_pops'>         
+      <div class='form-container_pops'>         
           <div onclick='logclose()' class='close_box'><p class='x-box'>X</p></div>
-                 <h1 class='Create_user_hs'>Log In</h1>
+                <img class='chois' src='choise.jpg'/>
                   <div id='eddits'>
                   <form  method='POST'>
                     <div class='form-group'>
@@ -372,11 +388,11 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
 }}else{echo "<div class='something'><h1>Ups clonee</h1></div>";
   } } }?>
       <style>
-        .CCreators{font-family:'Cabin Sketch', cursive; font-size:30px; padding:0px;padding-left:10px; padding-right:10px;padding-top:10px;padding-bottom:10px;background-color:white;border:1px solid black;border-radius:5px;}
+        
         .C-containers{height:auto; width:250px;text-align:center;margin-bottom:5%;margin-left:25%;}
      </style>
              <div class='C-containers'>
-  <button class='CCreators'onclick='logger()'>New Account</botton>
+           <button id='CCreators' class='btn btn-info'onclick='logger()'></botton>
         </div>
       </div>
    </div>
@@ -390,6 +406,7 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
             showCreator.style.display ='none';
             Secondblocklog.style.display ='none';
           }
+
     var Secondblocklog = document.getElementById('creator-displayers');
   function log(){ 
        showCreator.style.display ='none';
