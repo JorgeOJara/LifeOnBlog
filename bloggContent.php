@@ -14,7 +14,8 @@ session_start();
           if(isset($header)){
             if(isset($_SESSION['user'])){
              if($_SESSION['user'] == $us){
-               echo "<div id='dor' class='dropdown'>
+            if(count($us) == 1){
+       echo "<div id='dor' class='dropdown'>
     <button id ='settingsk' class='btn btn-primary dropdown-toggle' type='button' data-toggle='dropdown'>
     <span class='caret'></span></button>
     <ul class='dropdown-menu'>
@@ -22,11 +23,14 @@ session_start();
       <li><a href=''><button id='delOn' class='btn btn-danger' value='".$ID."'>Delete</button></a></li></ul></div></div>";
     echo "<div class='header-block'><h1 class='psh'>".$header."</h1></div>";
         }else{
+          echo "<div class='header-block'><h1 class='psh'>".$header."</h1></div>";
+        }
+      }else{
          echo "<div class='header-block'><h1 class='psh'>".$header."</h1></div>";
         }
            }else{
            echo "<div class='header-block'><h1 class='psh'>".$header."</h1></div>";}
-           }
+          }
           if(isset($image)){
   if(substr($image,-3) == "jpg" ||substr($image,-3)=="png"){
         echo"<div class='image-container'><img class='psimage' src='image/".$image."'/></div>";}}
@@ -34,7 +38,6 @@ session_start();
            if(isset($us)){
           echo '<div class="usa"><p>By:</p><h2 class="uname">'.$us.'</h2></div>';
                /////Create like System...
-           
            }
-        }
+          }
 ?>
