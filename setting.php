@@ -1,7 +1,7 @@
 <?php
   require "connection.php";
-  if(isset($_GET['num'])){
-      $reques = $_GET['num'];
+  if(isset($_POST['num'])){
+      $reques = $_POST['num'];
      $getting = "SELECT * FROM pst WHERE ID = $reques";
     $resul = $connect->query($getting);
     while($rows = mysqli_fetch_assoc($resul)){
@@ -10,7 +10,7 @@
            $headss = $rows['header'];
             $textss =$rows['textd'];
             echo  $IDs."~".$headss ."~".$textss;
-              $_SESSION['loopup'] = $IDs;
+            $_SESSION['look'] = $IDs;
         }
      }
      require 'connection.php';

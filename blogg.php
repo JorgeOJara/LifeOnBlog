@@ -1,7 +1,7 @@
  <?php
   session_start();
  require 'connection.php';
-  require 'setting.php';
+  // require 'setting.php';
       if(isset($_SESSION['user'])){
        $member = $_SESSION['user'];
       }
@@ -58,51 +58,58 @@
          </div>
       <?php
   //require 'connection.php';
-  $connect = new mysqli('localhost','root','','blogg');
+  require 'connection.php';
   if(isset($_POST['insert'])){
   $head =$connect->real_escape_string(htmlentities($_POST['td']));           
   $txt =$connect->real_escape_string(htmlentities($_POST['txt']));
   $img =$_FILES['image']['name'];
-  $target = "image/".basename($_FILES['image']['name']);        
+  $target = "image/".basename($_FILES['image']['name']);
+  $dt = date("Y/m/d");        
   if(strlen($head) > 1 && strlen($txt) > 1){          
 $finding = 'SELECT header FROM pst WHERE header=$head';
 $results = $connect->query($finding);
-if(mysqli_num_rows($results) == 0){
+if(mysqli_num_rows($results) == false){
 if(isset($img)){      
 if(substr($img,-3) == "jpg" || substr($img,-3)=="png"){
 if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
-   $inserted = "INSERT INTO pst(ID,header,image,textd,user)VALUES('NULL','$head','$img','$txt','$member')";
-           $request = mysqli_query($connect,$inserted);
+   $inserted = "INSERT INTO pst(ID,header,image,textd,user,dt)VALUES('NULL','$head','$img','$txt','$member','$dt')";
+           $request3 = mysqli_query($connect,$inserted);
+             $inserteds = "INSERT INTO likes(pstid,userlike,numlikes)VALUES('$head','None','0')";
+                $request3 = mysqli_query($connect,$inserteds);
                 }
                   }else{
-            $ins = "INSERT INTO pst(ID,header,image,textd,user)VALUES('NULL','$head','NULL','$txt','$member')";
+            $ins = "INSERT INTO pst(ID,header,image,textd,user,dt)VALUES('NULL','$head','NULL','$txt','$member','$dt')";
                 $request2 = mysqli_query($connect,$ins);
+                $inserteds = "INSERT INTO likes(pstid,userlike,numlikes)VALUES('$head','None','0')";
+                $request3 = mysqli_query($connect,$inserteds);
                     }
                        }else{
-            $ins = "INSERT INTO pst(ID,header,image,textd,user)VALUES('NULL','$head','NULL','$txt','$member')";
+            $ins = "INSERT INTO pst(ID,header,image,textd,user,dt)VALUES('NULL','$head','NULL','$txt','$member','$dt')";
+          $inserteds = "INSERT INTO likes(pstid,userlike,numlikes)VALUES('$head','None','0')";
+                $request3 = mysqli_query($connect,$inserteds);
                 $request2 = mysqli_query($connect,$ins);
                        }
                      }
                   }else{
-                  echo '<div class="alert alert-danger"><h2>You need to insert something in order to request a post</h2></div>';
-                     }
+               echo '<div class="alert alert-danger"><h2>You need to insert something in order to request a post</h2></div>';}
                  }
               ?>
-     <!--  //////////////////////////////////////////////// -->
-           <!-- ///Data Sender Jquery Shit \-->
-      <script type='text/javascript' src='jquery-3.2.1.min.js'></script>
-              <script>
-              $('document').ready(function(){
-                 $('#scontainer').hide();
+    <script type='text/javascript' src='jquery-3.2.1.min.js'></script>
+        <script>
+              //start  Listener For Setting Menu..
+          
+      //if update Setting Menu Isset show and display edditor whit value .../ 
+      $('document').ready(function(){
                $('#upOn').click(function(){
                     var conn = $('#upOn').val();
-                    $.ajax({
+                    $.post({
                       url:'setting.php',
-                      data:'num='+ conn,
+                      data:{'num':conn},
                       success: function(data){
-                           console.log("done");
-                         $('#scontainer').show();
-                          var dat = data.split('~');  
+                       $('#scontainer').show();
+                        console.log("done");   
+                        var dat = data.split('~');
+                        var hold = dat[0];
                      $('#requesting').attr('value',dat[1]);
                       $("#textUpdate").text(dat[2]);
                        }
@@ -111,8 +118,7 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
                $('#settingsk').click(function(){
                   $('#del').toggle();
                });
-//////////////////////////////////////////////////////////////////////////////
-   //delete data sender ....//
+  // if Delete Btn Isset send value of the request to aliminate pst...
                 $('#delOn').click(function(){
                      var id = $('#delOn').val();
                        $.ajax({
@@ -129,15 +135,18 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
                 });
              });
               </script>
+           <!-- blogg content -->
         <div id='blcontent' class='container-block'>
-   <!-- blogg content -->
-      </div> 
+   
+
+
+            </div> 
         <script>
         var pop = document.getElementById('popup_container');
           function closeb(){pop.style.display ='none';}
           function openb(){ pop.style.display ='block';}
                 var showing = document.getElementById('blcontent');
-
+    /// function use In All the Btn To load All the content...Pure Javascript
                    function load(){
                       var finder = new XMLHttpRequest();
                         finder.open('GET','bloggContent.php',true);
@@ -150,7 +159,7 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
                        reload();
                    }
                 load();
-           
+           // to realod Another part Of the blogg site... Manu //
                   function reload(){
                     var finders = new XMLHttpRequest();
                         finders.open('GET','displayer.php',true);
@@ -195,32 +204,10 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
              #delOn{width:100%;margin:1%;}
              </style>
 <!-- ///////////////////////////////////////////////////////////////// -->
-        <!-- deaL Maker Setting -setup -->
-    <div id='scontainer' class='scontainer'>
-
+        <!--It show The edditor Manu And display Value-->
+        <div id='scontainer' class='scontainer'>
       <div class='config'>
        <div id='ccc' class='ourclose'><p class='endzone'>X</p></div>
-        <?php
-         if(isset($_SESSION['loopup'])){
-           $val = $_SESSION['loopup'];
-         }
-       
-      $connect = new mysqli('localhost','root','','blogg');
-      if(isset($_SESSION['user'])){
-     if(isset($_POST['senders'])){
-   $Nh = $connect->real_escape_string(htmlentities($_POST['newheader']));
-   $Nt = $connect->real_escape_string(htmlentities($_POST['newtext']));
-    if(isset($Nh)){
-       $chang = "UPDATE pst SET header = '$Nh' WHERE ID = $val ";
-          $connect->query($chang);
-              if(isset($Nt)){
-          $cha = "UPDATE pst SET textd ='$Nt' WHERE ID = $val";
-        $connect->query($cha); 
-             }
-            }           
-          }
-        }
-        ?>
          <h2 class='updes'>Fix Or Change</h2>
          <form method='POST' action='blogg.php' id='continuedc'>
            <div class='form-group'>
@@ -233,6 +220,27 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
               </form>
           </div>
        </div>
+    <?php
+     if(isset($_SESSION['look'])){
+        $val = $_SESSION['look'];
+     }        
+     require 'connection.php';
+      if(isset($_SESSION['user'])){
+     if(isset($_POST['senders'])){
+   $Nh = $connect->real_escape_string(htmlentities($_POST['newheader']));
+   $Nt = $connect->real_escape_string(htmlentities($_POST['newtext']));
+    if(isset($Nh)){
+       $chang = "UPDATE pst SET header = '$Nh' WHERE ID = $val ";
+          $connect->query($chang);
+          
+            }  
+      if(isset($Nt)){
+          $cha = "UPDATE pst SET textd ='$Nt' WHERE ID = $val";
+               $connect->query($cha); 
+             }         
+          }
+        }
+        ?>
         <style>
           .second_pop{ position:fixed; top:0px;background-color:rgba(0,0,0,0.7);}
           .second_pops{ display:none;height:100%; width:100%;position:fixed; top:0px;background-color:rgba(0,0,0,0.7);}
@@ -344,22 +352,23 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
                .x-box{border-radius:0px;}
 
 
-               .chois{height:auto; width:150px;border-radius:1000px;position:relative;left:37%; top:20px;}
+               .chois{height:200; width:200px;border-radius:1000px;position:relative; top:20px;}
 
                /*//// btn in*/
                .C-containers{height:auto;width:auto;float:right;}
                 .CCreators{width:50px;float:right;}
           @media(max-width:420px){
-              .form-container_pops{top:10%; height:60%; width:98%; border:1px solid black; background-color:white; left:1%;border-radius:10px;}
+              .form-container_pops{top:10%; height:80%; width:98%; border:1px solid black; background-color:white; left:1%;border-radius:10px;}
 
                   #eddits{width:65%;left:0px;margin-top:10%;}
-                  .chois{height:auto; width:150px;border-radius:1000px;position:relative;left:37%; top:20px;}
+                  .chois{height:150px; width:150px;border-radius:1000px;}
                }
+                 .imagelogcontainer{width:100%;margin:0px; padding:0px;display:flex;justify-content:center}
              </style>
            <div id='creator-displayers' class='second_pops'>
       <div class='form-container_pops'>         
           <div onclick='logclose()' class='close_box'><p class='x-box'>X</p></div>
-                <img class='chois' src='choise.jpg'/>
+                <div class='imagelogcontainer'><img class='chois' src='choise.jpg'/></div>
                   <div id='eddits'>
                   <form  method='POST'>
                     <div class='form-group'>
@@ -382,7 +391,7 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
     while($rows = mysqli_fetch_assoc($resulted)){
     $colle = $rows["user"];
     $collp =$rows["password"];
-    if($collp != $pa){
+    if($collp == $pa){
     $_SESSION['user'] =$colle;
     }else{echo "<div class='something'><h1>Ups six</h1></div>";}
 }}else{echo "<div class='something'><h1>Ups clonee</h1></div>";
@@ -392,7 +401,7 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
         .C-containers{height:auto; width:250px;text-align:center;margin-bottom:5%;margin-left:25%;}
      </style>
              <div class='C-containers'>
-           <button id='CCreators' class='btn btn-info'onclick='logger()'></botton>
+             <button id='CCreators' class='btn btn-info'onclick='logger()'></botton>
         </div>
       </div>
    </div>
@@ -420,6 +429,53 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
        function logclose(){
           Secondblocklog.style.display ='none';
        }
-         </script>      
+         </script>
+      <style>
+     /* //comment container*/
+        .comm-container{
+        height:500px; width:100%;display:flex; justify-content:center;overflow-x:hidden;overflow-y:scroll;
+        }
+       /* //text container*/
+        .text-container-comm{
+           height:100px; width:70%;margin:10%;display:flex;border-radius:6px;
+        }
+        /*// daaaaa?*/
+        .image-profile-container{
+           height:60px; width:60px;border:1px solid black;border-radius:50%;flex:1;
+        }
+
+      /*  // message container*/
+        .message-container{
+     flex:6; height:60px;border:0.5px solid black;border-radius:6px;margin-left:3px;
+        }
+       /* /// messager creater ...*/
+       .insert-container{
+         height:70px; width:100%;display:flex;
+           justify-content:center;overflow:hidden;
+       }
+        @media(min-width:650px){
+         .holder{
+          height:100%;width:60%;
+       } 
+       .image-profile-container{
+           height:100px; width:100px;border:1px solid black;border-radius:50%;flex:1;
+        }
+         .message-container{
+     flex:6; height:60px;border:0.5px solid black;border-radius:6px;margin-left:3px;margin-top:20px;
+        }
+        }
+     /*  //text holder*/
+       .holder{
+          height:100%;width:100%;
+       }
+      /* // btn container comm*/
+       .comm-btn{
+          height:50px; width:100%;display:flex;
+           justify-content:center;margin:1px;
+       }
+       #commbtn{
+         height:35px; width:100%;
+       }
+         </style>      
        </body>
    </html>
