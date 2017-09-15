@@ -73,21 +73,24 @@ if(isset($img)){
 if(substr($img,-3) == "jpg" || substr($img,-3)=="png"){
 if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
    $inserted = "INSERT INTO pst(ID,header,image,textd,user,dt)VALUES('NULL','$head','$img','$txt','$member','$dt')";
-           $request3 = mysqli_query($connect,$inserted);
+           $request4 = mysqli_query($connect,$inserted);
              $inserteds = "INSERT INTO likes(pstid,userlike,numlikes)VALUES('$head','None','0')";
                 $request3 = mysqli_query($connect,$inserteds);
+                $connect->close();
                 }
                   }else{
             $ins = "INSERT INTO pst(ID,header,image,textd,user,dt)VALUES('NULL','$head','NULL','$txt','$member','$dt')";
                 $request2 = mysqli_query($connect,$ins);
                 $inserteds = "INSERT INTO likes(pstid,userlike,numlikes)VALUES('$head','None','0')";
                 $request3 = mysqli_query($connect,$inserteds);
+                $connect->close();
                     }
                        }else{
             $ins = "INSERT INTO pst(ID,header,image,textd,user,dt)VALUES('NULL','$head','NULL','$txt','$member','$dt')";
           $inserteds = "INSERT INTO likes(pstid,userlike,numlikes)VALUES('$head','None','0')";
                 $request3 = mysqli_query($connect,$inserteds);
                 $request2 = mysqli_query($connect,$ins);
+                 $connect->close();
                        }
                      }
                   }else{
