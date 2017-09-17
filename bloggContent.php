@@ -1,8 +1,9 @@
 <?php
 session_start();
+  require 'connection.php';
      //delete bottoms ...
           $connect = new mysqli('localhost','root','','blogg');
-          $find = "SELECT * FROM pst ORDER BY dt DESC";
+          $find = "SELECT * FROM pst ORDER BY dt DESC LIMIT 10";
           $gold = mysqli_query($connect,$find); 
          while($rows = mysqli_fetch_assoc($gold)){
           $ID = $rows['ID'];
@@ -13,8 +14,13 @@ session_start();
           $dt = $rows['dt'];
           if(isset($header)){
             if(isset($_SESSION['user'])){
-             if($_SESSION['user'] == $us){
-            if(count($us) == 1){
+         if($_SESSION['user'] == $us){
+           $indent = $_SESSION['user'];
+             $lpst = "SELECT * FROM users WHERE user = '$indent'";
+              $lgetting = mysqli_query($connect,$lpst);
+               $col = mysqli_fetch_assoc($lgetting);
+                  $valk = $col['lpst'];
+          if($ID == $valk){
        echo "<div id='dor' class='dropdown'>
     <button id ='settingsk' class='btn btn-primary dropdown-toggle' type='button' data-toggle='dropdown'>
     <span class='caret'></span></button>
@@ -26,11 +32,13 @@ session_start();
           echo "<div class='header-block'><h1 class='psh'>".$header."</h1></div>";
         }
       }else{
+          echo "<div class='header-block'><h1 class='psh'>".$header."</h1></div>";
+        }
+      }else{
          echo "<div class='header-block'><h1 class='psh'>".$header."</h1></div>";
         }
            }else{
            echo "<div class='header-block'><h1 class='psh'>".$header."</h1></div>";}
-          }
           if(isset($image)){
   if(substr($image,-3) == "jpg" ||substr($image,-3)=="png"){
         echo"<div class='image-container'><img class='psimage' src='image/".$image."'/></div>";}}

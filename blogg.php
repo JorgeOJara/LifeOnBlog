@@ -76,20 +76,52 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
            $request4 = mysqli_query($connect,$inserted);
              $inserteds = "INSERT INTO likes(pstid,userlike,numlikes)VALUES('$head','None','0')";
                 $request3 = mysqli_query($connect,$inserteds);
-                $connect->close();
+                 if($request4 == true){
+                    $lasp = "SELECT * FROM pst WHERE header = '$head'";
+                    $findersSlepers = mysqli_query($connect,$lasp);
+                    $lhelp = mysqli_fetch_assoc($findersSlepers);
+                      //pst ID 
+                       $compare = $lhelp['ID'];
+                      // Update
+                  $lup = "UPDATE users SET lpst = $compare WHERE user ='$member'";
+                      mysqli_query($connect,$lup);
+                    $connect->close();
+                   }
                 }
                   }else{
             $ins = "INSERT INTO pst(ID,header,image,textd,user,dt)VALUES('NULL','$head','NULL','$txt','$member','$dt')";
                 $request2 = mysqli_query($connect,$ins);
                 $inserteds = "INSERT INTO likes(pstid,userlike,numlikes)VALUES('$head','None','0')";
                 $request3 = mysqli_query($connect,$inserteds);
-                $connect->close();
+                 
+                 if($request2 == true){
+                    $lasp = "SELECT * FROM pst WHERE header = '$head'";
+                    $findersSlepers = mysqli_query($connect,$lasp);
+                     $lhelp = mysqli_fetch_assoc($findersSlepers);
+                      //pst ID 
+                       $compare = $lhelp['ID'];
+                      // Update
+                  $lup = "UPDATE users SET lpst = $compare WHERE user ='$member'";
+                      mysqli_query($connect,$lup);
                     }
+                    $connect->close();
+                  }
                        }else{
             $ins = "INSERT INTO pst(ID,header,image,textd,user,dt)VALUES('NULL','$head','NULL','$txt','$member','$dt')";
           $inserteds = "INSERT INTO likes(pstid,userlike,numlikes)VALUES('$head','None','0')";
                 $request3 = mysqli_query($connect,$inserteds);
                 $request2 = mysqli_query($connect,$ins);
+                 if($request2 == true){
+                    $lasp = "SELECT * FROM pst WHERE header = '$head'";
+                    $findersSlepers = mysqli_query($connect,$lasp);
+                     $lhelp = mysqli_fetch_assoc($findersSlepers);
+                      //pst ID 
+                       $compare = $lhelp['ID'];
+                      // Update
+                  $lup = "UPDATE users SET lpst = $compare WHERE user ='$member'";
+                      mysqli_query($connect,$lup);
+                    }
+                    $connect->close();
                  $connect->close();
                        }
                      }
@@ -227,19 +259,20 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
      if(isset($_SESSION['look'])){
         $val = $_SESSION['look'];
      }        
-     require 'connection.php';
+      require 'connection.php';
       if(isset($_SESSION['user'])){
-     if(isset($_POST['senders'])){
+      if(isset($_POST['senders'])){
    $Nh = $connect->real_escape_string(htmlentities($_POST['newheader']));
    $Nt = $connect->real_escape_string(htmlentities($_POST['newtext']));
     if(isset($Nh)){
-       $chang = "UPDATE pst SET header = '$Nh' WHERE ID = $val ";
+          $chang = "UPDATE pst SET header = '$Nh' WHERE ID = $val ";
           $connect->query($chang);
-          
+          $connect->close();
             }  
       if(isset($Nt)){
-          $cha = "UPDATE pst SET textd ='$Nt' WHERE ID = $val";
+               $cha = "UPDATE pst SET textd ='$Nt' WHERE ID = $val";
                $connect->query($cha); 
+               $connect->close();
              }         
           }
         }
@@ -288,24 +321,25 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
             <button onclick='load()' name='sss' id='sbtn' class='btn btn-info'>Submit</button>
         </form>      
     <?php
-      $connecting2 = new mysqli('localhost','root','','blogg');
-      if(!$connecting2){echo 'Connection Fail'; header('location:https://www.google.com');}
+      require 'connection.php';
+      if(!$connect){echo 'Connection Fail'; header('location:https://www.google.com');}
 
     if(isset($_POST['sss'])){
-      $U=$connecting2->real_escape_string($_POST['user']);
-      $E=$connecting2->real_escape_string($_POST['email']);
-  $p=$connecting2->real_escape_string(md5($_POST['password']));
- $p2=$connecting2->real_escape_string(md5($_POST['spassword']));
+      $U=$connect->real_escape_string($_POST['user']);
+      $E=$connect->real_escape_string($_POST['email']);
+  $p=$connect->real_escape_string(md5($_POST['password']));
+ $p2=$connect->real_escape_string(md5($_POST['spassword']));
       if(strlen($U) > 4 && strlen($E) > 5){
         if($p == $p2){
             $finded = "SELECT * FROM users Where email = '$E'";
-            $requestedinto = $connecting2->query($finded);
+            $requestedinto = $connect->query($finded);
               if(mysqli_num_rows($requestedinto) == 0){
-            $in ="INSERT INTO users(ID,user,email,password)VALUES('NULL','$U','$E','$p')";
-               $conclude = $connecting2->query($in);
+   $in ="INSERT INTO users(ID,user,email,password)VALUES('NULL','$U','$E','$p')";
+               $conclude = $connect->query($in);
                if($conclude == true){
                 $_SESSION['user']= $U; 
                }
+               $connect->close();
               }else{echo "<div class='something'></div>" ;}
                  }else{
                    echo "<div class='something'></div>" ; 
@@ -386,7 +420,7 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
    <?php
        if(isset($_POST['ssd'])){
         $em = $connect->real_escape_string(htmlentities($_POST['emailL']));
-  $pa = $connecting2->real_escape_string(htmlentities(md5($_POST['passwordL'])));
+  $pa = $connect->real_escape_string(htmlentities(md5($_POST['passwordL'])));
   if(strlen($em) > 4 && strlen($pa) > 4){
     $finding2 = "SELECT * FROM users WHERE email ='$em'";
     $resulted = mysqli_query($connect,$finding2);
@@ -396,6 +430,7 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
     $collp =$rows["password"];
     if($collp == $pa){
     $_SESSION['user'] =$colle;
+    $connect->close();
     }else{echo "<div class='something'><h1>Ups six</h1></div>";}
 }}else{echo "<div class='something'><h1>Ups clonee</h1></div>";
   } } }?>
