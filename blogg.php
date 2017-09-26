@@ -3,8 +3,8 @@
  require 'connection.php';
   // require 'setting.php';
       if(isset($_SESSION['user'])){
-       $member = $_SESSION['user'];
-      }
+        $member = $_SESSION['user'];
+      }   
  ?>
 <!doctype html>
      <html>
@@ -21,10 +21,9 @@
         </head>
      <body>
       <style>
-      .block{margin:0px;padding:0px;height:70px;}
+      .block{margin:0px;padding:0px;height:70px;width:100%;}
        .header{color:white;padding-left:4%; padding-top:15px; margin:0px;}
 
-       
          /*//btnss...*/
          #cl{width:155px;margin:1%;}
          #newO{width:155px;margin:1%;}
@@ -32,14 +31,14 @@
          #drop{margin:1%;}
          #drop{margin-left:0%;margin-top:-0.5%;}
      </style>
-  <div class='block' style='border-bottom:1px solid black;'>
+  <div class='block' style='border-bottom:1px solid black;width:100%;margin:0px;'>
     <div class='heade'><h1 class='header'>lIFEOnBLOG</h1></div>
   <div class='drop-container'><div id='drop' class="dropdown">
     <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">   
     <span class="glyphicon glyphicon-cog"></span></button>
     <ul id='showSetting' class="dropdown-menu dropdown-menu-right"></ul>
      </div>
-  </div><div class='ffl'></div>        
+  </div>        
 </div>
     <!-- post data from the pop up.... -->
       <div id='popup_container'>
@@ -52,12 +51,11 @@
               <div class='text-containers'>
                 <textarea name='txt' class='txt'></textarea>
               </div>
-  <button onclick='load()' name='insert' id='helper' class='btn btn-success'>POST</button>
+  <button onclick='loading()' name='insert' id='helper' class='btn btn-success'>POST</button>
              </form>
            </div>
          </div>
       <?php
-  //require 'connection.php';
   require 'connection.php';
   if(isset($_POST['insert'])){
   $head =$connect->real_escape_string(htmlentities($_POST['td']));           
@@ -66,9 +64,9 @@
   $target = "image/".basename($_FILES['image']['name']);
   $dt = date("Y/m/d");        
   if(strlen($head) > 1 && strlen($txt) > 1){          
-$finding = 'SELECT header FROM pst WHERE header=$head';
+$finding = "SELECT header FROM pst WHERE header='$head'";
 $results = $connect->query($finding);
-if(mysqli_num_rows($results) == false){
+if(mysqli_num_rows($results) == 0){
 if(isset($img)){      
 if(substr($img,-3) == "jpg" || substr($img,-3)=="png"){
 if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
@@ -87,13 +85,13 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
                       mysqli_query($connect,$lup);
                     $connect->close();
                    }
+                   $connect->close();
                 }
                   }else{
+                  require 'connection.php';
             $ins = "INSERT INTO pst(ID,header,image,textd,user,dt)VALUES('NULL','$head','NULL','$txt','$member','$dt')";
-                $request2 = mysqli_query($connect,$ins);
-                $inserteds = "INSERT INTO likes(pstid,userlike,numlikes)VALUES('$head','None','0')";
-                $request3 = mysqli_query($connect,$inserteds);
-                 
+            $ins = "INSERT INTO likes(pstid,userlike,numlikes)VALUES('$head','None','0')";
+                $request2 = mysqli_query($connect,$ins);  
                  if($request2 == true){
                     $lasp = "SELECT * FROM pst WHERE header = '$head'";
                     $findersSlepers = mysqli_query($connect,$lasp);
@@ -107,9 +105,9 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
                     $connect->close();
                   }
                        }else{
+                    require 'connection.php';
             $ins = "INSERT INTO pst(ID,header,image,textd,user,dt)VALUES('NULL','$head','NULL','$txt','$member','$dt')";
-          $inserteds = "INSERT INTO likes(pstid,userlike,numlikes)VALUES('$head','None','0')";
-                $request3 = mysqli_query($connect,$inserteds);
+          $ins = "INSERT INTO likes(pstid,userlike,numlikes)VALUES('$head','None','0')";
                 $request2 = mysqli_query($connect,$ins);
                  if($request2 == true){
                     $lasp = "SELECT * FROM pst WHERE header = '$head'";
@@ -118,22 +116,31 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
                       //pst ID 
                        $compare = $lhelp['ID'];
                       // Update
-                  $lup = "UPDATE users SET lpst = $compare WHERE user ='$member'";
+                $lup = "UPDATE users SET lpst = $compare WHERE user ='$member'";
                       mysqli_query($connect,$lup);
                     }
                     $connect->close();
-                 $connect->close();
                        }
                      }
                   }else{
-               echo '<div class="alert alert-danger"><h2>You need to insert something in order to request a post</h2></div>';}
+               echo '<div id="alerted" class="alert alert-danger"><h2>Sorry Something went wrong...</h2></div><script> var ale  = document.getElementById("alerted"); 
+                   function s(){
+                    setTimeout(function(){
+                       ale.style.opacity ="0";
+                    },3000);
+                   }
+                   s();
+               </script>';}
                  }
               ?>
     <script type='text/javascript' src='jquery-3.2.1.min.js'></script>
+     <style>
+          #alerted{margin-top:5%; transition:opacity 3s;}
+     </style>
         <script>
               //start  Listener For Setting Menu..
           
-      //if update Setting Menu Isset show and display edditor whit value .../ 
+      // if update Setting Menu Isset show and display edditor whit value .../ 
       $('document').ready(function(){
                $('#upOn').click(function(){
                     var conn = $('#upOn').val();
@@ -141,7 +148,7 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
                       url:'setting.php',
                       data:{'num':conn},
                       success: function(data){
-                       $('#scontainer').show();
+                    $('#scontainer').show();
                         console.log("done");   
                         var dat = data.split('~');
                         var hold = dat[0];
@@ -150,18 +157,15 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
                        }
                     });
                  });
-               $('#settingsk').click(function(){
-                  $('#del').toggle();
-               });
   // if Delete Btn Isset send value of the request to aliminate pst...
                 $('#delOn').click(function(){
                      var id = $('#delOn').val();
-                       $.ajax({
-                      url:'setting.php',
-                      data:'sel='+ id,
+                       $.post({
+                       url:'settingdel.php',
+                      data:{'sel':id},
                       success: function(data){
                            console.log("done");
-                          load();
+                          loading();
                        }
                     });
                 });
@@ -182,7 +186,7 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
           function openb(){ pop.style.display ='block';}
                 var showing = document.getElementById('blcontent');
     /// function use In All the Btn To load All the content...Pure Javascript
-                   function load(){
+                   function loading(){
                       var finder = new XMLHttpRequest();
                         finder.open('GET','bloggContent.php',true);
                         finder.onreadystatechange = function(){
@@ -193,7 +197,7 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
                         finder.send();
                        reload();
                    }
-                load();
+                loading();
            // to realod Another part Of the blogg site... Manu //
                   function reload(){
                     var finders = new XMLHttpRequest();
@@ -251,7 +255,7 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
                 <div class='form-group'>
               <textarea name='newtext' class='form-control' id='textUpdate' value=''></textarea>
               </div>
-                <button onclick='load()' name='senders' id='senders' class='btn btn-info'>Update</button>
+                <button onclick='loading()' name='senders' id='senders' class='btn btn-info'>Update</button>
               </form>
           </div>
        </div>
@@ -260,22 +264,19 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
         $val = $_SESSION['look'];
      }        
       require 'connection.php';
-      if(isset($_SESSION['user'])){
       if(isset($_POST['senders'])){
    $Nh = $connect->real_escape_string(htmlentities($_POST['newheader']));
    $Nt = $connect->real_escape_string(htmlentities($_POST['newtext']));
     if(isset($Nh)){
           $chang = "UPDATE pst SET header = '$Nh' WHERE ID = $val ";
           $connect->query($chang);
-          $connect->close();
-            }  
+         }  
       if(isset($Nt)){
                $cha = "UPDATE pst SET textd ='$Nt' WHERE ID = $val";
                $connect->query($cha); 
-               $connect->close();
-             }         
+             }  
+             $connect->close();   
           }
-        }
         ?>
         <style>
           .second_pop{ position:fixed; top:0px;background-color:rgba(0,0,0,0.7);}
@@ -303,7 +304,7 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
                <div  class='form-container_pop'>
             <!-- Second pop activator .... -->
             <div onclick='Createclose()' class='close_box'><p class='x-box'>X</p></div>
-                 <h1 class='Create_user_h'>Create USer</h1>
+                 <h1 class='Create_user_h'>Create Account</h1>
                   <div id='eddit'>
                   <form  method='POST'>
                    <div class='form-group'>
@@ -318,7 +319,7 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
                    <div class='form-group'>
                    <input class='form-control' name='spassword' type='password' placeholder='Re Enter Password'/>
                    </div>
-            <button onclick='load()' name='sss' id='sbtn' class='btn btn-info'>Submit</button>
+            <button onclick='loading()' name='sss' id='sbtn' class='btn btn-info'>Submit</button>
         </form>      
     <?php
       require 'connection.php';
@@ -340,23 +341,47 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
                 $_SESSION['user']= $U; 
                }
                $connect->close();
-              }else{echo "<div class='something'></div>" ;}
+              }else{echo '<div id="alerted" class="alert alert-danger"><h2>Sorry Something went wrong...</h2></div><script> var ale  = document.getElementById("alerted"); 
+                   function s(){
+                    setTimeout(function(){
+                       ale.style.opacity ="0";
+                    },3000);
+                   }
+                   s();
+               </script>';}
                  }else{
-                   echo "<div class='something'></div>" ; 
+                   echo "<div id='alerted' class='alert alert-danger'><h2>Sorry Something went wrong...</h2></div><script> var ale  = document.getElementById('alerted'); 
+                   function s(){
+                    setTimeout(function(){
+                       ale.style.opacity ='0';
+                    },3000);
+                   }
+                   s();
+               </script>;" ; 
                  }
                    }else{
-                     echo "<div class='something'></div>" ; 
+                     echo '<div id="alerted" class="alert alert-danger"><h2>Sorry Something went wrong...</h2></div><script> var ale  = document.getElementById("alerted"); 
+                   function s(){
+                    setTimeout(function(){
+                       ale.style.opacity ="0";
+                    },3000);
+                   }
+                   s();
+               </script>'; 
                    }
                  }
                   ?> 
                 </div>
             <div class='log-container'>
-                  <button class='loginCreator' onclick='log()'>LogIn</button>
+                  <button id='lig' class='btn btn-info' onclick='log()'>...</button>
                   </div>
               </div>
           </div>  
            <!-- Second pop logIn activator .... -->
             <style>
+            #CCreators{float:right;margin-right:10px; border-radius:1000px;margin-bottom:10px;}
+            .log-container{float:right; margin:0px;margin-bottom:10px;margin-right:1px;}
+            #lig{border-radius:1000px;}
               #sbtns{width:100%;}
              .Create_user_hs{top:10px; margin-top:1%; margin-bottom:0px; position:relative;top:10px;font-size:45px;padding-top:50px;padding-left:50px;font-family:'Cabin Sketch', cursive;}
              .close_boxs{height:30px;width:30px;float:right;text-align:center; z-index:400;}
@@ -389,7 +414,7 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
                .x-box{border-radius:0px;}
 
 
-               .chois{height:200; width:200px;border-radius:1000px;position:relative; top:20px;}
+               .chois{height:auto; width:auto;border-radius:10000px;position:relative; top:20px;}
 
                /*//// btn in*/
                .C-containers{height:auto;width:auto;float:right;}
@@ -404,7 +429,7 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
              </style>
            <div id='creator-displayers' class='second_pops'>
       <div class='form-container_pops'>         
-          <div onclick='logclose()' class='close_box'><p class='x-box'>X</p></div>
+        <div onclick='logclose()' class='close_box'><p class='x-box'>X</p></div>
                 <div class='imagelogcontainer'><img class='chois' src='choise.jpg'/></div>
                   <div id='eddits'>
                   <form  method='POST'>
@@ -414,7 +439,7 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
                     <div class='form-group'>
                     <input class='form-control' name='passwordL' type='password' placeholder='Ur password'/>
                     </div>
-                  <button onclick='load()' name='ssd' id='sbtns' class='btn btn-info'>Submit</button>
+                  <button onclick='loading()' name='ssd' id='sbtns' class='btn btn-info'>Submit</button>
               </form>       
           </div>
    <?php
@@ -429,17 +454,30 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
     $colle = $rows["user"];
     $collp =$rows["password"];
     if($collp == $pa){
-    $_SESSION['user'] =$colle;
+    $_SESSION['user'] = $colle;
     $connect->close();
-    }else{echo "<div class='something'><h1>Ups six</h1></div>";}
-}}else{echo "<div class='something'><h1>Ups clonee</h1></div>";
+    }else{echo '<div id="alerted" class="alert alert-danger"><h2>Sorry Something went wrong...</h2></div><script> var ale  = document.getElementById("alerted"); 
+                   function s(){
+                    setTimeout(function(){
+                       ale.style.opacity ="0";
+                    },3000);
+                   }
+                   s();
+               </script>';}
+}}else{echo '<div id="alerted" class="alert alert-danger"><h2>Sorry Something went wrong...</h2></div><script> var ale  = document.getElementById("alerted"); 
+                   function s(){
+                    setTimeout(function(){
+                       ale.style.opacity ="0";
+                    },3000);
+                   }
+                   s();
+               </script>';
   } } }?>
       <style>
-        
         .C-containers{height:auto; width:250px;text-align:center;margin-bottom:5%;margin-left:25%;}
      </style>
              <div class='C-containers'>
-             <button id='CCreators' class='btn btn-info'onclick='logger()'></botton>
+             <button id='CCreators' class='btn btn-info'onclick='logger()'>...</botton>
         </div>
       </div>
    </div>
@@ -514,6 +552,6 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
        #commbtn{
          height:35px; width:100%;
        }
-         </style>      
+         </style> 
        </body>
    </html>
