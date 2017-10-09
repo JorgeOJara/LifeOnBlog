@@ -13,4 +13,5 @@
             $_SESSION['look'] = $IDs;
          $connect->close();
      }
+     exit();
 ?>

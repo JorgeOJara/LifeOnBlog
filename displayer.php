@@ -4,8 +4,7 @@
    if(isset($_SESSION['user'])){
        $member = $_SESSION['user'];
       }
-
-
+      
  if(isset($member)){
         echo "<li><a href='#'><button id='cl' onclick='openb()' class='btn btn-info'>Post</button></li>";
           }

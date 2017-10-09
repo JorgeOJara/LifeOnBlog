@@ -6,4 +6,5 @@
          $resulS = $connect->query($gettings);
           $connect->close();
         }
+        exit();
    ?>

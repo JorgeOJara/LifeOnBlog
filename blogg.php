@@ -1,3 +1,5 @@
+
+<!doctype html>
  <?php
   session_start();
  require 'connection.php';
@@ -6,7 +8,6 @@
         $member = $_SESSION['user'];
       }   
  ?>
-<!doctype html>
      <html>
         <head>
            <title>www.LifeOnBlog.com</title>
@@ -264,6 +265,7 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
         $val = $_SESSION['look'];
      }        
       require 'connection.php';
+  if(isset($_SESSION['user'])){
       if(isset($_POST['senders'])){
    $Nh = $connect->real_escape_string(htmlentities($_POST['newheader']));
    $Nt = $connect->real_escape_string(htmlentities($_POST['newtext']));
@@ -277,6 +279,7 @@ if(move_uploaded_file($_FILES['image']['tmp_name'],$target)){
              }  
              $connect->close();   
           }
+        }
         ?>
         <style>
           .second_pop{ position:fixed; top:0px;background-color:rgba(0,0,0,0.7);}
